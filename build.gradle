@@ -34,7 +34,7 @@ buildscript {
         artifactId: 'feedly-coroutines',
         bintrayRepoName: 'TinyFeedly',
         desc: 'Feedly Api Library focused on Android integration',
-        website: 'https://github.com/ternaryop/tinyfeedly'
+        website: 'https://github.com/ternaryop/tinyfeedly-coroutines'
     ]
 
     repositories {
