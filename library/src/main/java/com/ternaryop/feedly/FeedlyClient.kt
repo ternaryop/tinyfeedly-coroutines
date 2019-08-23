@@ -40,9 +40,16 @@ interface FeedlyService {
         : List<Category>
 }
 
-class FeedlyClient(var accessToken: String, userId: String, private val refreshToken: String) {
+data class FeedlyClientInfo(
+    val userId: String,
+    val refreshToken: String,
+    val clientId: String,
+    val clientSecret: String)
 
-    val globalSavedTag = "user/$userId/tag/global.saved"
+class FeedlyClient(
+    var accessToken: String,
+    val feedlyClientInfo: FeedlyClientInfo = globalClientInfo) {
+    val globalSavedTag = "user/${feedlyClientInfo.userId}/tag/global.saved"
 
     suspend fun getStreamContents(streamId: String, params: Map<String, String>): StreamContent {
         return service()
@@ -57,11 +64,11 @@ class FeedlyClient(var accessToken: String, userId: String, private val refreshT
             .markSaved(Marker("entries", if (saved) "markAsSaved" else "markAsUnsaved", ids))
     }
 
-    suspend fun refreshAccessToken(clientId: String, clientSecret: String): AccessToken {
+    suspend fun refreshAccessToken(): AccessToken {
         val data = mapOf(
-            "refresh_token" to refreshToken,
-            "client_id" to clientId,
-            "client_secret" to clientSecret,
+            "refresh_token" to feedlyClientInfo.refreshToken,
+            "client_id" to feedlyClientInfo.clientId,
+            "client_secret" to feedlyClientInfo.clientSecret,
             "grant_type" to "refresh_token"
         )
         return service()
@@ -106,8 +113,10 @@ class FeedlyClient(var accessToken: String, userId: String, private val refreshT
 
     companion object {
         private var okHttpClient: OkHttpClient? = null
+        private lateinit var globalClientInfo: FeedlyClientInfo
 
-        fun setup(okHttpClient: OkHttpClient?) {
+        fun setup(feedlyUser: FeedlyClientInfo, okHttpClient: OkHttpClient? = null) {
+            this.globalClientInfo = feedlyUser
             this.okHttpClient = okHttpClient
         }
 
