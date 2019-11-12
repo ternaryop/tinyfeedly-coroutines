@@ -11,6 +11,7 @@ interface FeedlyContent {
     val id: String
     val title: String
     val originId: String
+    val canonicalUrl: String?
     val actionTimestamp: Long
     val origin: FeedlyOrigin
 }
@@ -22,6 +23,7 @@ data class SimpleFeedlyContent(
     override val id: String,
     @SerializedName("title") private val nullableTitle: String?,
     override val originId: String,
+    override val canonicalUrl: String?,
     override val actionTimestamp: Long,
     override val origin: FeedlyOrigin,
     val categories: List<Category>?) : FeedlyContent {
