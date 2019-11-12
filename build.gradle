@@ -8,19 +8,19 @@ buildscript {
         compileSdkVersion = 29
         buildToolsVersion = '28.0.3'
 
-        androidXAppCompatLibVersion = '1.1.0-rc01'
-        androidXCoreKtx = '1.0.2'
+        androidXAppCompatLibVersion = '1.1.0'
+        androidXCoreKtx = '1.1.0'
 
-        kotlinxCoroutinesCore = '1.2.1'
+        kotlinxCoroutinesCore = '1.3.2'
 
-        okhttp3HttpLibVersion = '4.1.0'
+        okhttp3HttpLibVersion = '4.2.2'
 
-        gsonLibVersion = '2.8.5'
+        gsonLibVersion = '2.8.6'
 
-        retrofitLibVersion = '2.6.1'
-        retrofitConverterGsonLibVersion = '2.6.1'
+        retrofitLibVersion = '2.6.2'
+        retrofitConverterGsonLibVersion = '2.6.2'
 
-        junitLibVersion = '4.13-beta-3'
+        junitLibVersion = '4.13-rc-1'
 
         androidXEspressoCoreLibVersion = '3.2.0'
         androidXTestRunner = '1.2.0'
@@ -29,7 +29,7 @@ buildscript {
     }
 
     ext.publishPackage = [
-        version: '1.0.1',
+        version: '1.0.2',
         groupId: 'com.ternaryop',
         artifactId: 'feedly-coroutines',
         bintrayRepoName: 'TinyFeedly',
@@ -43,7 +43,7 @@ buildscript {
         
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:3.5.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         classpath "com.novoda:bintray-release:$novaBintrayReleaseLibVersion"
