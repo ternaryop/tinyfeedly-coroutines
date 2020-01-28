@@ -25,30 +25,35 @@ private const val API_PREFIX = "https://cloud.feedly.com/"
 
 interface FeedlyService {
     @GET("v3/streams/contents")
-    suspend fun getStreamContents(@Query("streamId") streamId: String, @QueryMap params: Map<String, String>)
-        : StreamContent
+    suspend fun getStreamContents(
+        @Query("streamId") streamId: String,
+        @QueryMap params: Map<String, String>
+    ): StreamContent
 
     @FormUrlEncoded
     @POST("v3/auth/token")
-    suspend fun refreshAccessToken(@FieldMap params: Map<String, String>) : AccessToken
+    suspend fun refreshAccessToken(@FieldMap params: Map<String, String>): AccessToken
 
     @POST("v3/markers")
     suspend fun markSaved(@Body marker: Marker)
 
     @GET("v3/categories")
-    suspend fun getCategories(@Query("sort") sort: String? = null)
-        : List<Category>
+    suspend fun getCategories(
+        @Query("sort") sort: String? = null
+    ): List<Category>
 }
 
 data class FeedlyClientInfo(
     val userId: String,
     val refreshToken: String,
     val clientId: String,
-    val clientSecret: String)
+    val clientSecret: String
+)
 
 class FeedlyClient(
     var accessToken: String,
-    val feedlyClientInfo: FeedlyClientInfo = globalClientInfo) {
+    val feedlyClientInfo: FeedlyClientInfo = globalClientInfo
+) {
     val globalSavedTag = "user/${feedlyClientInfo.userId}/tag/global.saved"
 
     suspend fun getStreamContents(streamId: String, params: Map<String, String>): StreamContent {
@@ -75,7 +80,7 @@ class FeedlyClient(
             .refreshAccessToken(data)
     }
 
-    suspend fun getCategories(sort: String? = null) : List<Category> = service().getCategories(sort)
+    suspend fun getCategories(sort: String? = null): List<Category> = service().getCategories(sort)
 
     fun service(): FeedlyService = builder.create(FeedlyService::class.java)
 

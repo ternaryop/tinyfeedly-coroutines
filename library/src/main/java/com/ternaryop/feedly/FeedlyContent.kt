@@ -26,7 +26,8 @@ data class SimpleFeedlyContent(
     override val canonicalUrl: String?,
     override val actionTimestamp: Long,
     override val origin: FeedlyOrigin,
-    val categories: List<Category>?) : FeedlyContent {
+    val categories: List<Category>?
+) : FeedlyContent {
     override val title: String
         get() = nullableTitle ?: "No title"
 }
@@ -52,5 +53,5 @@ data class StreamContentFindParam(val count: Int = 0, val newerThan: Long = 0, v
 data class AccessToken(@SerializedName("access_token") val accessToken: String)
 data class Marker(val type: String, val action: String, val entryIds: List<String>)
 data class Error(val errorCode: Int, val errorId: String, val errorMessage: String?) {
-    fun hasTokenExpired() : Boolean = errorMessage != null && errorMessage.startsWith("token expired")
+    fun hasTokenExpired(): Boolean = errorMessage != null && errorMessage.startsWith("token expired")
 }

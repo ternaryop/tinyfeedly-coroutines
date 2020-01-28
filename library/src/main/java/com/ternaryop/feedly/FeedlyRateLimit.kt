@@ -28,6 +28,7 @@ object FeedlyRateLimit {
         reset()
     }
 
+    @Suppress("MagicNumber")
     private fun formatResetLimit(seconds: Int): String {
         val sb = StringBuilder()
         var remainingSeconds = seconds
