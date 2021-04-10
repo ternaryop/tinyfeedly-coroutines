@@ -1,20 +1,15 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply from: '../bintrayconfig.gradle'
+apply plugin: "com.vanniktech.maven.publish"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
 
-        // fix the error "More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'"
-        // when used inside the app
         kotlinOptions {
-            freeCompilerArgs += ['-module-name', "${rootProject.ext.publishPackage.groupId}.${rootProject.ext.publishPackage.artifactId}"]
             jvmTarget = "1.8"
         }
     }
@@ -23,7 +18,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName rootProject.ext.publishPackage.version
+        versionName VERSION_NAME
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
