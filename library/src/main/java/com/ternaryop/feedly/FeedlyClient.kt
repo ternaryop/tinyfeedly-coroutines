@@ -1,10 +1,10 @@
 package com.ternaryop.feedly
 
-import com.google.gson.GsonBuilder
+import com.squareup.moshi.Moshi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
@@ -85,8 +85,8 @@ class FeedlyClient(
     fun service(): FeedlyService = builder.create(FeedlyService::class.java)
 
     val builder: Retrofit by lazy {
-        val gson = GsonBuilder()
-            .create()
+        val moshi = Moshi.Builder()
+            .build()
         val authInterceptor = Interceptor { chain: Interceptor.Chain ->
             {
                 val newRequest = chain.request().newBuilder()
@@ -111,7 +111,7 @@ class FeedlyClient(
 
         Retrofit.Builder()
             .baseUrl(API_PREFIX)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(builder.build())
             .build()
     }
@@ -134,11 +134,15 @@ class FeedlyClient(
                 response.body?.source()?.also { source ->
                     source.request(java.lang.Long.MAX_VALUE) // Buffer the entire body.
                     val json = source.buffer.clone().readUtf8()
-                    val error = GsonBuilder().create().fromJson<Error>(json, Error::class.java)
-                    if (error.hasTokenExpired()) {
-                        throw TokenExpiredException(error.errorMessage!!)
+                    val error = Moshi.Builder().build().adapter(Error::class.java).fromJson(json)
+                    if (error == null) {
+                        throw IOException("Unable to parse error $json")
+                    } else {
+                        if (error.hasTokenExpired()) {
+                            throw TokenExpiredException(error.errorMessage!!)
+                        }
+                        throw IOException("Error $responseCode: ${error.errorMessage}")
                     }
-                    throw IOException("Error $responseCode: ${error.errorMessage}")
                 }
             }
             response

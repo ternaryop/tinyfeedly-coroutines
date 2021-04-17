@@ -1,6 +1,7 @@
 package com.ternaryop.feedly
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Created by dave on 24/02/17.
@@ -16,12 +17,16 @@ interface FeedlyContent {
     val origin: FeedlyOrigin
 }
 
+@JsonClass(generateAdapter = true)
 data class FeedlyOrigin(val title: String)
+
+@JsonClass(generateAdapter = true)
 data class Category(val id: String, val label: String, val description: String? = null)
 
+@JsonClass(generateAdapter = true)
 data class SimpleFeedlyContent(
     override val id: String,
-    @SerializedName("title") private val nullableTitle: String?,
+    @Json(name = "title") internal val nullableTitle: String?,
     override val originId: String,
     override val canonicalUrl: String?,
     override val actionTimestamp: Long,
@@ -32,6 +37,7 @@ data class SimpleFeedlyContent(
         get() = nullableTitle ?: "No title"
 }
 
+@JsonClass(generateAdapter = true)
 data class StreamContent(var id: String, val items: List<SimpleFeedlyContent>)
 
 data class StreamContentFindParam(val count: Int = 0, val newerThan: Long = 0, val continuation: String? = null) {
@@ -50,8 +56,13 @@ data class StreamContentFindParam(val count: Int = 0, val newerThan: Long = 0, v
     }
 }
 
-data class AccessToken(@SerializedName("access_token") val accessToken: String)
+@JsonClass(generateAdapter = true)
+data class AccessToken(@Json(name = "access_token") val accessToken: String)
+
+@JsonClass(generateAdapter = true)
 data class Marker(val type: String, val action: String, val entryIds: List<String>)
+
+@JsonClass(generateAdapter = true)
 data class Error(val errorCode: Int, val errorId: String, val errorMessage: String?) {
     fun hasTokenExpired(): Boolean = errorMessage != null && errorMessage.startsWith("token expired")
 }

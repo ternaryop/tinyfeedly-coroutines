@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: "com.vanniktech.maven.publish"
 
 android {
@@ -38,12 +39,13 @@ dependencies {
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ext.kotlinxCoroutinesCore}"
 
-    api "com.google.code.gson:gson:${rootProject.ext.gsonLibVersion}"
-
     api "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttp3HttpLibVersion}"
 
     api "com.squareup.retrofit2:retrofit:${rootProject.ext.retrofitLibVersion}"
-    api "com.squareup.retrofit2:converter-gson:${rootProject.ext.retrofitConverterGsonLibVersion}"
+    api "com.squareup.retrofit2:converter-moshi:${rootProject.ext.retrofitConverterMoshiLibVersion}"
+
+    api "com.squareup.moshi:moshi:${rootProject.ext.moshiLibVersion}"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:${rootProject.ext.moshiKotlinCodegenLibVersion}"
 
     testImplementation "junit:junit:${junitLibVersion}"
     androidTestImplementation "androidx.test:runner:${androidXTestRunner}"
