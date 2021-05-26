@@ -5,7 +5,7 @@ import org.junit.Test
 
 private const val ONE_HOUR_MILLIS = 60 * 60 * 1000
 
-class FeedlyUnitTest: AbsFeedlyUnitTest() {
+class FeedlyUnitTest : AbsFeedlyUnitTest() {
 
     @Test
     fun streamTest() {
@@ -27,6 +27,24 @@ class FeedlyUnitTest: AbsFeedlyUnitTest() {
             val accessToken = feedlyClient.refreshAccessToken()
             println("new access token")
             println(accessToken.accessToken)
+        }
+    }
+
+    @Test
+    fun unreadOnlyTest() = runBlocking {
+        val params = StreamContentFindParam(10, unreadOnly = true)
+            .toQueryMap()
+        for (cat in properties.getProperty("unreadCategories").split("\n")) {
+            println("\nCategory $cat\n")
+            val streamContents =
+                feedlyClient.getStreamContents(
+                    cat,
+                    params
+                )
+
+            streamContents.items.forEachIndexed { index, content ->
+                println("$index => ${content.title} -- ${content.nullableTitle} ===> ${content.origin}")
+            }
         }
     }
 }
