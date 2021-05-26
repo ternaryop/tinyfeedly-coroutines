@@ -29,7 +29,7 @@ data class SimpleFeedlyContent(
     @Json(name = "title") internal val nullableTitle: String?,
     override val originId: String,
     override val canonicalUrl: String?,
-    override val actionTimestamp: Long,
+    override val actionTimestamp: Long = 0,
     override val origin: FeedlyOrigin,
     val categories: List<Category>?
 ) : FeedlyContent {
@@ -40,8 +40,15 @@ data class SimpleFeedlyContent(
 @JsonClass(generateAdapter = true)
 data class StreamContent(var id: String, val items: List<SimpleFeedlyContent>)
 
-data class StreamContentFindParam(val count: Int = 0, val newerThan: Long = 0, val continuation: String? = null) {
-    fun toQueryMap(): Map<String, String> {
+data class StreamContentFindParam(
+    val count: Int = 0,
+    val newerThan: Long = 0,
+    val continuation: String? = null,
+    val unreadOnly: Boolean = false,
+    val showMuted: Boolean = false,
+    val importantOnly: Boolean = false
+) {
+    fun toQueryMap(): MutableMap<String, String> {
         val map = mutableMapOf<String, String>()
 
         if (count > 0) {
@@ -52,6 +59,10 @@ data class StreamContentFindParam(val count: Int = 0, val newerThan: Long = 0, v
         }
         continuation?.let { map["continuation"] = it }
 
+        map["unreadOnly"] = unreadOnly.toString()
+        map["showMuted"] = showMuted.toString()
+        map["importantOnly"] = importantOnly.toString()
+
         return map
     }
 }
@@ -59,10 +70,18 @@ data class StreamContentFindParam(val count: Int = 0, val newerThan: Long = 0, v
 @JsonClass(generateAdapter = true)
 data class AccessToken(@Json(name = "access_token") val accessToken: String)
 
+enum class MarkerAction {
+    @Json(name = "markAsSaved") MarkAsSaved,
+    @Json(name = "markAsUnsaved") MarkAsUnsaved,
+    @Json(name = "markAsRead") MarkAsRead,
+    @Json(name = "keepUnread") KeepUnread,
+}
+
 @JsonClass(generateAdapter = true)
-data class Marker(val type: String, val action: String, val entryIds: List<String>)
+data class Marker(val type: String, val action: MarkerAction, val entryIds: List<String>)
 
 @JsonClass(generateAdapter = true)
 data class Error(val errorCode: Int, val errorId: String, val errorMessage: String?) {
-    fun hasTokenExpired(): Boolean = errorMessage != null && errorMessage.startsWith("token expired")
+    fun hasTokenExpired(): Boolean =
+        errorMessage != null && errorMessage.startsWith("token expired")
 }

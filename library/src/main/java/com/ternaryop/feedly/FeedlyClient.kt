@@ -35,7 +35,7 @@ interface FeedlyService {
     suspend fun refreshAccessToken(@FieldMap params: Map<String, String>): AccessToken
 
     @POST("v3/markers")
-    suspend fun markSaved(@Body marker: Marker)
+    suspend fun markers(@Body marker: Marker)
 
     @GET("v3/categories")
     suspend fun getCategories(
@@ -61,12 +61,10 @@ class FeedlyClient(
             .getStreamContents(streamId, params)
     }
 
-    suspend fun markSaved(ids: List<String>, saved: Boolean) {
-        if (ids.isEmpty()) {
-            return
+    suspend fun mark(ids: List<String>, action: MarkerAction) {
+        if (ids.isNotEmpty()) {
+            service().markers(Marker("entries", action, ids))
         }
-        return service()
-            .markSaved(Marker("entries", if (saved) "markAsSaved" else "markAsUnsaved", ids))
     }
 
     suspend fun refreshAccessToken(): AccessToken {
@@ -88,20 +86,15 @@ class FeedlyClient(
         val moshi = Moshi.Builder()
             .build()
         val authInterceptor = Interceptor { chain: Interceptor.Chain ->
-            {
-                val newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", "OAuth $accessToken").build()
-                chain.proceed(newRequest)
-            }()
+            val newRequest = chain.request().newBuilder()
+                .addHeader("Authorization", "OAuth $accessToken").build()
+            chain.proceed(newRequest)
         }
         val rateInterceptor = Interceptor { chain: Interceptor.Chain ->
-            {
-                val request = chain.request()
-                val response = chain.proceed(request)
-
-                FeedlyRateLimit.update(response.code, response.headers)
-                response
-            }()
+            val request = chain.request()
+            val response = chain.proceed(request)
+            FeedlyRateLimit.update(response.code, response.headers)
+            response
         }
 
         val builder = okHttpClient?.newBuilder() ?: OkHttpClient.Builder()
