@@ -70,6 +70,8 @@ data class StreamContentFindParam(
 @JsonClass(generateAdapter = true)
 data class AccessToken(@Json(name = "access_token") val accessToken: String)
 
+// Enum, Moshi and R8 https://github.com/Yelp/swagger-gradle-codegen/issues/71
+@JsonClass(generateAdapter = false)
 enum class MarkerAction {
     @Json(name = "markAsSaved") MarkAsSaved,
     @Json(name = "markAsUnsaved") MarkAsUnsaved,
