@@ -124,7 +124,7 @@ class FeedlyClient(
             val responseCode = response.code
 
             if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                response.body?.source()?.also { source ->
+                response.body.source().also { source ->
                     source.request(java.lang.Long.MAX_VALUE) // Buffer the entire body.
                     val json = source.buffer.clone().readUtf8()
                     val error = Moshi.Builder().build().adapter(Error::class.java).fromJson(json)

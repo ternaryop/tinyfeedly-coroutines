@@ -1,9 +1,9 @@
 package com.ternaryop.feedly
 
 import org.junit.Before
-import java.util.*
+import java.util.Properties
 
-abstract class AbsFeedlyUnitTest {
+open class AbsFeedlyUnitTest {
     lateinit var properties: Properties
     lateinit var feedlyClient: FeedlyClient
 

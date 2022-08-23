@@ -3,29 +3,29 @@ apply plugin: "com.github.ben-manes.versions"
 apply from: 'https://raw.githubusercontent.com/dafi/gradle-scripts/main/dependencyUpdatesReplacer.gradle'
 
 buildscript {
-    ext.kotlin_version = '1.5.10'
+    ext.kotlin_version = '1.7.10'
     ext {
         minSdkVersion = 26
-        targetSdkVersion = 29
-        compileSdkVersion = 29
+        targetSdkVersion = 33
+        compileSdkVersion = 33
 
-        androidXAppCompatLibVersion = '1.4.0-alpha01'
-        androidXCoreKtx = '1.6.0-beta01'
+        androidXAppCompatLibVersion = '1.6.0-beta01'
+        androidXCoreKtx = '1.9.0-beta01'
 
-        kotlinxCoroutinesCore = '1.5.0'
+        kotlinxCoroutinesCore = '1.6.4'
 
-        okhttp3HttpLibVersion = '5.0.0-alpha.2'
+        okhttp3HttpLibVersion = '5.0.0-alpha.10'
 
-        moshiLibVersion = '1.12.0'
-        moshiKotlinCodegenLibVersion = '1.12.0'
+        moshiLibVersion = '1.13.0'
+        moshiKotlinCodegenLibVersion = '1.13.0'
 
         retrofitLibVersion = '2.9.0'
         retrofitConverterMoshiLibVersion = '2.9.0'
 
         junitLibVersion = '4.13.2'
 
-        androidXEspressoCoreLibVersion = '3.4.0-beta01'
-        androidXTestRunner = '1.4.0-beta01'
+        androidXEspressoCoreLibVersion = '3.5.0-alpha07'
+        androidXTestRunner = '1.5.0-alpha04'
     }
 
     repositories {
@@ -34,25 +34,24 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.38.0"
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.21.0"
 
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.15.1'
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.32'
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.21.0'
+        // latest dokka version throws NoSuchMethodError so we stay with an older version
+        // https://github.com/Kotlin/dokka/issues/2452
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.6.10'
     }
 }
 
 allprojects {
+    apply plugin: "io.gitlab.arturbosch.detekt"
+
     repositories {
         google()
         mavenCentral()
-    }
-
-    plugins.withId("com.vanniktech.maven.publish") {
-        mavenPublish {
-            sonatypeHost = "S01"
-        }
     }
 }
 

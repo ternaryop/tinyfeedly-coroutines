@@ -2,6 +2,7 @@ package com.ternaryop.feedly
 
 import okhttp3.Headers
 import java.net.HttpURLConnection
+import java.util.Locale
 
 /**
  * Created by dave on 25/02/17.
@@ -42,7 +43,7 @@ object FeedlyRateLimit {
         if (days > 0) {
             sb.append(" $days days ")
         }
-        return sb.append(String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)).toString()
+        return sb.append(String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, remainingSeconds)).toString()
     }
 
     private fun reset() {
