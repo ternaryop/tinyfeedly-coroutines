@@ -74,39 +74,58 @@ class FeedlyClient(
             "client_secret" to feedlyClientInfo.clientSecret,
             "grant_type" to "refresh_token"
         )
-        return service()
+        return service(false)
             .refreshAccessToken(data)
     }
 
     suspend fun getCategories(sort: String? = null): List<Category> = service().getCategories(sort)
 
-    fun service(): FeedlyService = builder.create(FeedlyService::class.java)
+    fun service(authorized: Boolean = true): FeedlyService = if (authorized) {
+        builder.create(FeedlyService::class.java)
+    } else {
+        builderNoAuth.create(FeedlyService::class.java)
+    }
 
     val builder: Retrofit by lazy {
+        val builder = feedlyHttpBuilder()
+            .also { it.interceptors().add(authInterceptor) }
+
+        retrofit(builder)
+    }
+
+    val builderNoAuth: Retrofit by lazy {
+        retrofit(feedlyHttpBuilder())
+    }
+
+    private fun retrofit(okHttpBuilder: OkHttpClient.Builder): Retrofit {
         val moshi = Moshi.Builder()
             .build()
-        val authInterceptor = Interceptor { chain: Interceptor.Chain ->
-            val newRequest = chain.request().newBuilder()
-                .addHeader("Authorization", "OAuth $accessToken").build()
-            chain.proceed(newRequest)
-        }
-        val rateInterceptor = Interceptor { chain: Interceptor.Chain ->
-            val request = chain.request()
-            val response = chain.proceed(request)
-            FeedlyRateLimit.update(response.code, response.headers)
-            response
-        }
 
-        val builder = okHttpClient?.newBuilder() ?: OkHttpClient.Builder()
-        builder.interceptors().add(authInterceptor)
-        builder.interceptors().add(errorInterceptor)
-        builder.interceptors().add(rateInterceptor)
-
-        Retrofit.Builder()
+        return Retrofit.Builder()
             .baseUrl(API_PREFIX)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(builder.build())
+            .client(okHttpBuilder.build())
             .build()
+    }
+
+    private fun feedlyHttpBuilder(): OkHttpClient.Builder =
+        (okHttpClient?.newBuilder() ?: OkHttpClient.Builder())
+            .also {
+                it.interceptors().add(errorInterceptor)
+                it.interceptors().add(rateInterceptor)
+            }
+
+    private val authInterceptor = Interceptor { chain ->
+        val newRequest = chain.request().newBuilder()
+            .addHeader("Authorization", "OAuth $accessToken").build()
+        chain.proceed(newRequest)
+    }
+
+    private val rateInterceptor = Interceptor { chain ->
+        val request = chain.request()
+        val response = chain.proceed(request)
+        FeedlyRateLimit.update(response.code, response.headers)
+        response
     }
 
     companion object {
