@@ -83,7 +83,7 @@ enum class MarkerAction {
 data class Marker(val type: String, val action: MarkerAction, val entryIds: List<String>)
 
 @JsonClass(generateAdapter = true)
-data class Error(val errorCode: Int, val errorId: String, val errorMessage: String?) {
+data class Error(val errorCode: Int, val errorId: String?, val errorMessage: String?) {
     fun hasTokenExpired(): Boolean =
         errorMessage != null && errorMessage.startsWith("token expired")
 }
