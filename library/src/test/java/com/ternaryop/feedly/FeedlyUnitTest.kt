@@ -8,7 +8,7 @@ private const val ONE_HOUR_MILLIS = 60 * 60 * 1000
 class FeedlyUnitTest : AbsFeedlyUnitTest() {
 
     @Test
-    fun streamTest() {
+    fun savedTagTest() {
         val ms = System.currentTimeMillis() - 5 * ONE_HOUR_MILLIS
         val params = StreamContentFindParam(30, ms)
         runBlocking {
